@@ -38,11 +38,14 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'core',
+    'django_celery_beat',  # LAB 5: Celery Beat for scheduled tasks
+    'debug_toolbar',  # LAB 6: Django Debug Toolbar for cache analysis
 ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'debug_toolbar.middleware.DebugToolbarMiddleware',  # LAB 6: Debug Toolbar
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -121,3 +124,94 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+
+# ============================================
+# LAB 4 & 5: CELERY CONFIGURATION
+# ============================================
+
+# Celery settings
+CELERY_BROKER_URL = 'redis://localhost:6379/0'
+CELERY_RESULT_BACKEND = 'redis://localhost:6379/0'
+CELERY_ACCEPT_CONTENT = ['json']
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_RESULT_SERIALIZER = 'json'
+CELERY_TIMEZONE = 'UTC'
+CELERY_TASK_TRACK_STARTED = True
+CELERY_TASK_TIME_LIMIT = 30 * 60  # 30 minutes
+
+
+# ============================================
+# LAB 5: CELERY BEAT CONFIGURATION
+# ============================================
+
+from celery.schedules import crontab
+
+# Celery Beat Schedule - Direct in code
+CELERY_BEAT_SCHEDULE = {
+    # Task 1: Run every 3 minutes
+    'cleanup-old-data-every-3-minutes': {
+        'task': 'core.tasks.cleanup_old_data',
+        'schedule': 180.0,  # 180 seconds = 3 minutes
+        'options': {
+            'expires': 120,
+        }
+    },
+}
+
+# Use Django database scheduler for admin-configured tasks
+CELERY_BEAT_SCHEDULER = 'django_celery_beat.schedulers:DatabaseScheduler'
+
+
+# ============================================
+# LAB 6: REDIS CACHE CONFIGURATION
+# ============================================
+
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.redis.RedisCache',
+        'LOCATION': 'redis://127.0.0.1:6379/1',  # Using database 1 for cache
+        'OPTIONS': {
+            'CLIENT_CLASS': 'django.core.cache.backends.redis.RedisClient',
+        },
+        'KEY_PREFIX': 'redisproject',
+        'TIMEOUT': 300,  # Default timeout 5 minutes
+    }
+}
+
+# Cache middleware settings (optional - for site-wide caching)
+CACHE_MIDDLEWARE_ALIAS = 'default'
+CACHE_MIDDLEWARE_SECONDS = 600
+CACHE_MIDDLEWARE_KEY_PREFIX = 'redisproject'
+
+
+# ============================================
+# LAB 6: DJANGO DEBUG TOOLBAR CONFIGURATION
+# ============================================
+
+INTERNAL_IPS = [
+    '127.0.0.1',
+    'localhost',
+]
+
+# Debug Toolbar Panels
+DEBUG_TOOLBAR_PANELS = [
+    'debug_toolbar.panels.history.HistoryPanel',
+    'debug_toolbar.panels.versions.VersionsPanel',
+    'debug_toolbar.panels.timer.TimerPanel',
+    'debug_toolbar.panels.settings.SettingsPanel',
+    'debug_toolbar.panels.headers.HeadersPanel',
+    'debug_toolbar.panels.request.RequestPanel',
+    'debug_toolbar.panels.sql.SQLPanel',
+    'debug_toolbar.panels.staticfiles.StaticFilesPanel',
+    'debug_toolbar.panels.templates.TemplatesPanel',
+    'debug_toolbar.panels.cache.CachePanel',  # For cache analysis
+    'debug_toolbar.panels.signals.SignalsPanel',
+    'debug_toolbar.panels.redirects.RedirectsPanel',
+    'debug_toolbar.panels.profiling.ProfilingPanel',
+]
+
+DEBUG_TOOLBAR_CONFIG = {
+    'SHOW_TOOLBAR_CALLBACK': lambda request: DEBUG,
+}
+

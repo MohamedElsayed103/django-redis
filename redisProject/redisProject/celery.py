@@ -7,15 +7,14 @@ os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'redisProject.settings')
 
 app = Celery('redisProject')
 
-# Redis as broker and result backend
-app.conf.broker_url = 'redis://localhost:6379/0'
-app.conf.result_backend = 'redis://localhost:6379/0'
+# Load config from Django settings with CELERY_ prefix
+app.config_from_object('django.conf:settings', namespace='CELERY')
 
-# Optional JSON configuration
-app.conf.accept_content = ['json']
-app.conf.task_serializer = 'json'
-app.conf.result_serializer = 'json'
-app.conf.timezone = 'Africa/Cairo'
-
-# Auto-discover tasks from all apps
+# Auto-discover tasks from all installed apps
 app.autodiscover_tasks()
+
+
+@app.task(bind=True)
+def debug_task(self):
+    print(f'Request: {self.request!r}')
+

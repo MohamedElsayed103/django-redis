@@ -1,0 +1,149 @@
+{% load cache %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Template Fragment Caching Demo</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1000px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 10px;
+        }
+        .timestamp {
+            background: #fff3cd;
+            padding: 10px;
+            border-radius: 5px;
+            margin: 20px 0;
+            font-weight: bold;
+        }
+        .cache-section {
+            background: #e7f3ff;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+        }
+        .no-cache-section {
+            background: #ffe7e7;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            border-left: 4px solid #dc3545;
+        }
+        .product {
+            background: white;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+        }
+        .product h3 {
+            margin: 0 0 10px 0;
+            color: #667eea;
+        }
+        .info {
+            background: #d4edda;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px 0;
+            border-left: 4px solid #28a745;
+        }
+        a {
+            display: inline-block;
+            margin-top: 20px;
+            padding: 10px 20px;
+            background: #667eea;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+        }
+        a:hover {
+            background: #5568d3;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎨 Template Fragment Caching Demo</h1>
+        
+        <div class="timestamp">
+            ⏰ Page Generated At: {{ timestamp }}
+        </div>
+
+        <div class="info">
+            <strong>ℹ️ Info:</strong> This page demonstrates template fragment caching. 
+            The "Cached Section" below is cached for 5 minutes and won't change on refresh. 
+            The "Non-Cached Section" shows the current timestamp on every request.
+        </div>
+
+        <!-- NON-CACHED SECTION - Updates on every request -->
+        <div class="no-cache-section">
+            <h2>🔴 Non-Cached Section (Dynamic)</h2>
+            <p>This section is generated on every request.</p>
+            <p><strong>Current Time:</strong> {{ timestamp }}</p>
+            <p>Refresh the page to see this timestamp update!</p>
+        </div>
+
+        <!-- CACHED SECTION - Cached for 5 minutes -->
+        {% cache 300 product_list %}
+        <div class="cache-section">
+            <h2>🟢 Cached Section (5 minutes)</h2>
+            <p>This section is cached and will show the same data for 5 minutes.</p>
+            <p><strong>Cached At:</strong> {{ timestamp }}</p>
+            
+            <h3>Products List:</h3>
+            {% if products %}
+                {% for product in products %}
+                <div class="product">
+                    <h3>{{ product.name }}</h3>
+                    <p><strong>Price:</strong> ${{ product.price }}</p>
+                    <p><strong>Stock:</strong> {{ product.stock }} units</p>
+                    <p><strong>Description:</strong> {{ product.description }}</p>
+                </div>
+                {% endfor %}
+            {% else %}
+                <p>No products available. Create some products in Django admin!</p>
+            {% endif %}
+        </div>
+        {% endcache %}
+
+        <!-- Another cached fragment with different key -->
+        {% cache 600 user_count %}
+        <div class="cache-section">
+            <h2>🟢 Another Cached Fragment (10 minutes)</h2>
+            <p>This is a separate cached section with different timeout.</p>
+            <p><strong>Cached At:</strong> {{ timestamp }}</p>
+            <p>This fragment is cached for 10 minutes.</p>
+        </div>
+        {% endcache %}
+
+        <div class="info">
+            <strong>💡 Testing Tips:</strong>
+            <ul>
+                <li>Refresh the page - non-cached timestamp updates, cached doesn't</li>
+                <li>Open Debug Toolbar and check the "Cache" panel</li>
+                <li>See cache hits/misses in real-time</li>
+                <li>Wait 5 minutes to see cache expire and regenerate</li>
+            </ul>
+        </div>
+
+        <a href="/">← Back to Home</a>
+        <a href="/cache/clear/">Clear All Cache</a>
+    </div>
+</body>
+</html>

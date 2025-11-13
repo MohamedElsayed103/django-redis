@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Django Redis Labs - Home</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 10px;
+            font-size: 2.5em;
+        }
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 40px;
+            font-size: 1.1em;
+        }
+        .lab-section {
+            margin-bottom: 40px;
+            padding: 25px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            border-left: 5px solid #667eea;
+        }
+        .lab-section h2 {
+            color: #667eea;
+            margin-bottom: 15px;
+            font-size: 1.8em;
+        }
+        .lab-section p {
+            color: #555;
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+        .endpoints {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 15px;
+        }
+        .endpoint {
+            background: white;
+            padding: 15px 20px;
+            border-radius: 8px;
+            border: 2px solid #e0e0e0;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        .endpoint:hover {
+            border-color: #667eea;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.2);
+        }
+        .endpoint a {
+            text-decoration: none;
+            color: #333;
+            display: block;
+        }
+        .endpoint-title {
+            font-weight: bold;
+            color: #667eea;
+            margin-bottom: 5px;
+            font-size: 1.1em;
+        }
+        .endpoint-desc {
+            font-size: 0.9em;
+            color: #666;
+        }
+        .external-links {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 30px;
+            flex-wrap: wrap;
+        }
+        .external-link {
+            background: #667eea;
+            color: white;
+            padding: 12px 30px;
+            border-radius: 25px;
+            text-decoration: none;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+        }
+        .external-link:hover {
+            background: #5568d3;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+        }
+        .external-link.flower {
+            background: #764ba2;
+        }
+        .external-link.flower:hover {
+            background: #653a91;
+        }
+        .badge {
+            display: inline-block;
+            background: #28a745;
+            color: white;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 0.75em;
+            margin-left: 10px;
+        }
+        .info-box {
+            background: #fff3cd;
+            border: 1px solid #ffc107;
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 20px;
+        }
+        .info-box h3 {
+            color: #856404;
+            margin-bottom: 10px;
+        }
+        .info-box ul {
+            margin-left: 20px;
+            color: #856404;
+        }
+        .info-box li {
+            margin-bottom: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🚀 Django Redis Labs</h1>
+        <p class="subtitle">Background Tasks, Scheduling, and Caching with Celery & Redis</p>
+
+        <!-- LAB 4 -->
+        <div class="lab-section">
+            <h2>📌 LAB 4: Background Immediate Tasks</h2>
+            <p>Test Celery background task execution with Redis as message broker. Monitor tasks via Flower.</p>
+            <div class="endpoints">
+                <div class="endpoint">
+                    <a href="/process-dataset/?size=50">
+                        <div class="endpoint-title">🔄 Process Dataset</div>
+                        <div class="endpoint-desc">Heavy CPU-bound background task (50 items)</div>
+                    </a>
+                </div>
+                <div class="endpoint">
+                    <a href="/generate-report/?type=sales&user_id=1">
+                        <div class="endpoint-title">📊 Generate Report</div>
+                        <div class="endpoint-desc">Heavy report generation task</div>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- LAB 5 -->
+        <div class="lab-section">
+            <h2>⏰ LAB 5: Background Scheduled Tasks</h2>
+            <p>Tasks scheduled with Celery Beat - check Django admin for periodic task configuration.</p>
+            <div class="info-box">
+                <h3>Scheduled Tasks:</h3>
+                <ul>
+                    <li><strong>Code-based:</strong> cleanup_old_data (every 3 minutes)</li>
+                    <li><strong>Admin-based:</strong> Configure send_daily_summary and backup_database in Django Admin</li>
+                    <li>Monitor execution in Celery worker logs and Flower</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- LAB 6 -->
+        <div class="lab-section">
+            <h2>💾 LAB 6: Redis Caching</h2>
+            <p>Test different caching strategies. <strong>Check Debug Toolbar</strong> for cache hit/miss analysis.</p>
+            <div class="endpoints">
+                <div class="endpoint">
+                    <a href="/cache/function/">
+                        <div class="endpoint-title">🔧 Cached Function</div>
+                        <div class="endpoint-desc">Heavy computation with function-level caching</div>
+                    </a>
+                </div>
+                <div class="endpoint">
+                    <a href="/cache/orm/">
+                        <div class="endpoint-title">🗄️ Cached ORM Query</div>
+                        <div class="endpoint-desc">Database query caching example</div>
+                    </a>
+                </div>
+                <div class="endpoint">
+                    <a href="/cache/full-view/">
+                        <div class="endpoint-title">📄 Full View Cache</div>
+                        <div class="endpoint-desc">Entire view cached with @cache_page decorator</div>
+                    </a>
+                </div>
+                <div class="endpoint">
+                    <a href="/cache/template/">
+                        <div class="endpoint-title">🎨 Template Fragment Cache</div>
+                        <div class="endpoint-desc">Template with cached fragments</div>
+                    </a>
+                </div>
+                <div class="endpoint">
+                    <a href="/cache/clear/">
+                        <div class="endpoint-title">🗑️ Clear Cache</div>
+                        <div class="endpoint-desc">Clear all cached data</div>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- External Links -->
+        <div class="external-links">
+            <a href="/admin/" class="external-link">🔐 Django Admin</a>
+            <a href="http://localhost:5555" target="_blank" class="external-link flower">🌸 Flower Monitor</a>
+        </div>
+
+        <div class="info-box" style="margin-top: 30px;">
+            <h3>🎯 Quick Start Guide:</h3>
+            <ul>
+                <li><strong>Step 1:</strong> Make sure Redis server is running</li>
+                <li><strong>Step 2:</strong> Start Celery worker: <code>celery -A redisProject worker -l info -P solo</code></li>
+                <li><strong>Step 3:</strong> Start Celery Beat: <code>celery -A redisProject beat -l info</code></li>
+                <li><strong>Step 4:</strong> Start Flower: <code>celery -A redisProject flower</code></li>
+                <li><strong>Step 5:</strong> Test the endpoints above and monitor in Flower</li>
+            </ul>
+        </div>
+    </div>
+</body>
+</html>
